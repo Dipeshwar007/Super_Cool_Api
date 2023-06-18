@@ -1,0 +1,32 @@
+// Controller done Users
+
+try {
+    if(await schema.validateAsync(req.body,{abortEarly:false,stripUnknown:true})){
+        try{
+            let hashed_pwd = await bcrypt.hash(req.body.password,10)
+            await Users.create({...req.body,password:hashed_pwd})
+            return res.send("user Created")
+        }catch(err){
+            // console.log(err)
+            const message = []
+            if (err.name == 'ValidationError') {
+                for (field in err.errors) {
+                    let fieldMessage = err.errors[field].message
+                    let fieldName = err.errors[field].path
+                    message.push({[fieldName]:fieldMessage})
+                }
+            }
+            return res.status(400).send({msg:"Database Error",error:{message}})
+        }
+    }
+}catch (err) {
+    // let errors = err.error.deta
+    let errors = err.details.map(validationErr=>{
+        let refinedMessage = validationErr.message.replaceAll('\"',"")
+        return {
+            params: validationErr.context.key,
+            message: refinedMessage
+        }
+    })
+    return res.send({msg:"Bad Request",errors})
+}
