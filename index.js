@@ -5,7 +5,7 @@ const { checkLogin } = require("./middleware/auth");
 const userRouter = require("./routes/users");
 
 const app = express();
-// require("./config/database")
+require("./config/database")
 
 app.use(express.json())
 
