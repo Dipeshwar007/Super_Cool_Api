@@ -1,6 +1,6 @@
 const ToDo = require("../Modal/todo")
 
-async function getTodos(req,res){
+async function getTodos(req,res,next){
     try{
         let data = await ToDo.find({})
         // let data = 0
@@ -10,7 +10,7 @@ async function getTodos(req,res){
             return res.send(data)
         }
     }catch(err){
-        return res.status(400).send({msg:err.message})
+        next(err)
     }
 }
 
