@@ -3,8 +3,7 @@ const ToDo = require("../Modal/todo")
 async function getTodos(req,res,next){
     try{
         let data = await ToDo.find({})
-        // let data = 0
-        if(!data){
+        if(data.length == 0){
             return res.send("Data not Found")
         }else{
             return res.send(data)

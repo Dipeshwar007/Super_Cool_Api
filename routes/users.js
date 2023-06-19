@@ -3,7 +3,7 @@ const express  = require("express");
 const userRouter = express.Router();
 
 // middleware
-const userValidation  = require("../middleware/usersAuth")
+const Validation  = require("../middleware/JoiAuth")
 
 // schemas
 const { signupSchema, loginSchema } = require("../validationSchema/userSchema");
@@ -12,7 +12,7 @@ const { signupSchema, loginSchema } = require("../validationSchema/userSchema");
 const { signup,login } = require("../controller/users");
 
 
-userRouter.post("/signup",userValidation(signupSchema),signup);
-userRouter.post("/login",userValidation(loginSchema),login);
+userRouter.post("/signup",Validation(signupSchema),signup);
+userRouter.post("/login",Validation(loginSchema),login);
 
 module.exports = userRouter;

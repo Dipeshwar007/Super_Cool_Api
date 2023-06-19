@@ -1,40 +1,35 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const ProductSchema = new Schema({
   title: {
     type : String,
     required: true
   },
-  email:{
+  price:{
+    type:Number,
+    min:0,
+    default: 0
+  },
+  description:{
     type: String,
+  },
+  images:{
+    type: [String]
+  },
+  categories:{
+    type: [String]
+  },
+  brand:{
+    type: [String]
+  },
+  seller_id:{
+    type: ObjectId,
     required: true,
-    validate:{
-        validator: async function(value){
-            let exist = await mongoose.models.Users.findOne({email:value})
-            if(exist){
-                return false
-            }
-        },
-        message: "Email already exist"
+    set: function (value){
+        return value.id
     }
-  },
-  password:{
-    type: String,
-    maxlength:255,
-    required : true
-  },
-  role:{
-    type: String,
-    enum:["SELLER","BUYER"],
-    set: function(value){
-      return value.toUpperCase() 
-    },
-    default: "BUYER"
-  },
-  created:{
-    type: Date,
-    default: Date.now
   },
   status: {
     type: Boolean,

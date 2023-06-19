@@ -1,19 +1,37 @@
+// main packedges
 const express = require("express");
-const todo_Router = require("./routes/todos");
+
+// router packedges
 const homeRouter = require("./routes/home");
-const { checkLogin } = require("./middleware/auth");
+const todo_Router = require("./routes/todos");
 const userRouter = require("./routes/users");
+const productRouter = require("./routes/products");
+
+// Middleware
+const { checkLogin } = require("./middleware/auth");
+
 
 const app = express();
+
+// database connection
 require("./config/database")
 
 app.use(express.json())
 
+// home 
 app.use("/",homeRouter)
+
+// todos api page
 app.use("/api",todo_Router)
 app.use("/api",checkLogin , todo_Router)
+
+// users API login and signup
 app.use("/api",userRouter)
 
+// Products create and request API
+app.use("/api",productRouter)
+
+// unkonown route request page
 app.use((req,res)=>{
     res.status(404).send({msg:"Resource Not Found"})
 })
