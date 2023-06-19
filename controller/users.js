@@ -26,8 +26,35 @@ async function signup(req,res){
 
 async function login(req,res){
     try{
-        // throw new Error('BROKEN')
-        return res.send("user authenticsted")
+        // fetch if user is inside database usiong email
+        let user = await Users.findOne({email:req.body.email})
+
+        if(user){ 
+            // if user exist
+
+            // password is being checked by bcrypt
+            let passwordMatch = await bcrypt.compare(req.body.password, user.password)
+
+            if(passwordMatch){
+
+                // when password matched
+                let withoutPassword = {...user.toObject()}
+                delete withoutPassword.password // passwor delete from object
+
+                // checking user status
+                let userStatus = withoutPassword.status
+
+                if(userStatus){
+                    // if user status is true
+                    delete withoutPassword.status // stauts deleted for safety
+
+                    return res.send({userData:withoutPassword})
+                }
+                return res.send({msg: "User Not verified"})
+            }
+            return res.send({msg: "Password not matched"})
+        }
+        return res.status(401).send({msg: "User not exist"})
     }catch(err){
         return res.status(400).send({msg:err.message})
     }
