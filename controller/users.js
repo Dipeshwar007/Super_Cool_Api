@@ -2,6 +2,7 @@
 const Users = require("../Modal/Users")
 
 // import third-party packedge
+const jwt = require("jsonwebtoken")
 const bcrypt = require('bcrypt');
 
 async function signup(req,res){
@@ -38,17 +39,19 @@ async function login(req,res){
             if(passwordMatch){
 
                 // when password matched
-                let withoutPassword = {...user.toObject()}
-                delete withoutPassword.password // passwor delete from object
+                let withoutPasswordStatus = {...user.toObject()}
+                delete withoutPasswordStatus.password // passwor delete from object
 
                 // checking user status
-                let userStatus = withoutPassword.status
+                let userStatus = withoutPasswordStatus.status
 
                 if(userStatus){
                     // if user status is true
-                    delete withoutPassword.status // stauts deleted for safety
+                    delete withoutPasswordStatus.status // stauts deleted for safety
 
-                    return res.send({userData:withoutPassword})
+                    // generate token
+                    let token = jwt.sign(withoutPasswordStatus,process.env.JWT_SECRET_KEY)
+                    return res.send({token})
                 }
                 return res.send({msg: "User Not verified"})
             }

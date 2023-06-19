@@ -1,6 +1,10 @@
 // main packedges
 const express = require("express");
 
+
+// third-party packedges
+require('dotenv').config()
+
 // router packedges
 const homeRouter = require("./routes/home");
 const todo_Router = require("./routes/todos");
@@ -23,7 +27,7 @@ app.use("/",homeRouter)
 
 // todos api page
 app.use("/api",todo_Router)
-app.use("/api",checkLogin , todo_Router)
+app.use("/api",todo_Router)
 
 // users API login and signup
 app.use("/api",userRouter)
@@ -48,5 +52,4 @@ app.use((err,req,res,next)=>{
 app.listen(process.env.PORT || 8000,()=>{
     console.log("server is running")
 })
-
 // module.exports = app;
