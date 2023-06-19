@@ -8,7 +8,7 @@ const productSchema = Joi.object({
     .max(30)
     .required(),
  
-    seller_id: Joi.object().required()
+    seller_id: Joi.string().hex().length(24).required()
 })
 
 module.exports = {

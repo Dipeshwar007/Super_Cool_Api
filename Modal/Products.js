@@ -26,10 +26,7 @@ const ProductSchema = new Schema({
   },
   seller_id:{
     type: ObjectId,
-    required: true,
-    set: function (value){
-        return value.id
-    }
+    required: true
   },
   status: {
     type: Boolean,
