@@ -26,7 +26,8 @@ const ProductSchema = new Schema({
   },
   seller_id:{
     type: ObjectId,
-    required: true
+    required: true,
+    ref: "User"
   },
   status: {
     type: Boolean,
