@@ -134,7 +134,7 @@ const addProduct = async (req,res,next) => {
             Note:- Async and await doesnot work inside forEach loop       
         });
     */
-    for (let index = 0; index < req.files.images?.length; index++) {
+    for (let index = 0; index < req.files?.images.length; index++) {
         let img = req.files.images[index]
         let file_name = Date.now() + "-" + Math.round(Math.random()*1E9) + path.extname(img.name)
         try{
