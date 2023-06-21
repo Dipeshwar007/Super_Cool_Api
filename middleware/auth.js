@@ -44,7 +44,7 @@ const isBelongTo = async (req,res,next) => {
         }
         return res.send({msg: "Product Not Found"})
     }catch(err){
-
+        console.log(err)
     }
     return res.status(403).send({msg: "Access Denied"})
 }

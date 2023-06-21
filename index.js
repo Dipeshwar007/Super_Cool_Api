@@ -4,6 +4,8 @@ const express = require("express");
 // third-party packedges
 require('dotenv').config()
 const fileUpload = require("express-fileupload");
+const helmet = require("helmet")
+const cors = require("cors")
 
 // router packedges
 const homeRouter = require("./routes/home");
@@ -24,6 +26,10 @@ require("./config/database")
 app.use(express.static('Public'))
 app.use(express.json())
 app.use(fileUpload(),convertRequest)
+app.use(helmet())
+app.use(cors({
+    origin: "http://locahost:3000/"
+}))
 
 
 // home 

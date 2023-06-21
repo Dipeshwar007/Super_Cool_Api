@@ -8,12 +8,121 @@ const Products = require("../Modal/Products")
 
 const getAllProducts = async (req,res,next)=>{
     try{
-        let products = await Products.find()
+        // Pagination
+        let per_page = parseInt(req.query.per_page) || 25
+        let page = parseInt(req.query.page) || 1
+
+        // search by terms
+        let search_term = req.query.search_term || ""
+
+        // search by price
+        let price_from = parseFloat(req.query.price_from) || 0
+        let price_to = parseFloat(req.query.price_to) || 999999999
+
+        // sort Data
+        let sort_by = req.query.short_by || {title:1}
+
+        switch (sort_by) {
+            case "titleasc":
+                sort_by = {title:1}
+                break;
+            case "titledesc":
+                sort_by = {title:-1}
+                break;
+            case "priceasc":
+                sort_by = {price:1}
+                break;
+            case "pricedesc":
+                sort_by = {price:-1}
+                break;
+        
+            default:
+                sort_by = {title:1}
+                break;
+        }
+        //let products = await Products.find({title: RegExp(search_term,"i")}).skip((page - 1) * per_page).limit(per_page)
+        
+        
+        /* let products = await Products.find(
+             {
+                 $or :[
+                     {title: RegExp(search_term,"i")},
+                     {categories: RegExp(search_term,"i")},
+                     {brand: RegExp(search_term,"i")}
+                 ],
+                 $and:[
+                     {price: {$gte: price_from,$lte:price_to}}
+                 ]
+             }
+         ).skip((page - 1) * per_page).limit(per_page)*/
+
+        // filter using aggrigation -> finding data using many filter step by step
+        let products = await Products.aggregate([
+            {
+                $match:{
+                    $or :[
+                        {title: RegExp(search_term,"i")},
+                        {categories: RegExp(search_term,"i")},
+                        {brand: RegExp(search_term,"i")}
+                    ]
+                }
+            },
+            {
+                $match: {
+                    price: {$gte: price_from , $lte:price_to}
+                }
+            },
+            {
+                $sort : sort_by
+            },
+            {
+                $lookup:{
+                    from:"users",
+                    // localField: "seller_id",
+                    let: { seller_id: '$seller_id' },
+                    // foreignField: "_id",
+                    pipeline: [
+                        {
+                          $match: {
+                            $expr: { $eq: ['$_id', '$$seller_id'] }
+                          }
+                        },
+                        {
+                          $project: {
+                            name: 1,
+                            email: 1
+                          }
+                        }
+                      ],
+                    as: "seller_id"
+                }
+            },
+            {
+                $unwind: "$seller_id"
+            },
+            {
+                $facet:{
+                    meta_data:[{$count:"total"},{$addFields:{page,per_page}}],
+                    products:[{$skip: ((page - 1) * per_page)},{$limit: per_page}]
+                }
+            },
+            {
+                $unwind: "$meta_data"
+            },
+            // {
+            //     $skip: ((page - 1) * per_page)
+            // },
+            // {
+            //     $limit: per_page
+            // }
+        ])
+
         if(products.length == 0){
-            return res.send({msg: "No data Found"})
+            return res.send({msg: "No Product Found"})
         }
         return res.send({data:products})
     }catch(err){
+        console.log(err)
         next(err)
     }
 }
